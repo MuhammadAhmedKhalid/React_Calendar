@@ -4,12 +4,17 @@ import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import events from './events'
 import AddEvent from '../../form/AddEvent';
+import { format } from 'date-fns';
 
 const localizer = momentLocalizer(moment)
 
 function FullCalendar() {
   const[openModal, setOpenModal] = useState(false)
-  const change = () => {
+  const[startDate, setStartDate] = useState(format(new Date(), 'MMMM dd, yyyy'))
+  const[endDate, setEndDate] = useState(format(new Date(), 'MMMM dd, yyyy'))
+  const change = (slotInfo) => {
+      setStartDate(slotInfo.start.toDateString())
+      setEndDate(slotInfo.start.toDateString())
       setOpenModal(true)
     }
   return (
@@ -21,22 +26,19 @@ function FullCalendar() {
         startAccessor="startDate"
         endAccessor="endDate"
         selectable
-        
         onSelectEvent={event => 
           alert(
-            `Event: ${event.title} \nStart time: ${event.startDate} \nEnd time: ${event.endDate}`
+            `Event: ${event.title} \nStart time: ${ format(new Date(event.startDate), 'MMMM dd, yyyy kk:mm:ss')} \nEnd time: ${ format(new Date(event.endDate), 'MMMM dd, yyyy kk:mm:ss')}`
           )
         }
-        // onSelectSlot={slotInfo =>
-        //   alert(
-        //     `\nStart: ${slotInfo.start.toLocaleString()}` +
-        //     `\nEnd: ${slotInfo.end.toLocaleString()}`
-        //   )
-        // }
-        onSelectSlot={change}
+        onSelectSlot={
+          slotInfo => change(slotInfo)
+        } 
       />
       <div>
-          <AddEvent setOpenModal={setOpenModal} openModal={openModal}/></div>
+          <AddEvent setOpenModal={setOpenModal} openModal={openModal} 
+                    startDate={startDate} endDate={endDate}
+                    setStartDate={setStartDate} setEndDate={setEndDate} /></div>
       </div>
   );
 }
