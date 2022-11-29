@@ -1,9 +1,8 @@
 import React from 'react'
 import Modal from 'react-modal'
-import { format } from 'date-fns';
 
 function ShowEvent(props) {
-    const {setDetailModal, detailModal, eventTitle, eventStartDateTime, eventEndDateTime} = props
+    const {setDetailModal, detailModal, eventTitle, startDate, endDate, startTime, endTime} = props
 
     const closeModal = () => {
         setDetailModal(false)
@@ -40,8 +39,10 @@ function ShowEvent(props) {
         onRequestClose={()=>setDetailModal(false)}>
              <h2>Event Details</h2>
              <p><b>Event:</b> {eventTitle}</p>
-             <p><b>Start Date-Time:</b> {format(new Date(eventStartDateTime), 'MMMM dd, yyyy kk:mm:ss')}</p>
-             <p><b>End Date-Time:</b> {format(new Date(eventEndDateTime), 'MMMM dd, yyyy kk:mm:ss')}</p>
+             <p><b>Start Date:</b> {startDate}</p>
+             <p><b>End Date:</b> {endDate}</p>
+             <p><b>Start Time:</b> {startTime}</p>
+             <p><b>End Time:</b> {endTime}</p>
              <div><button onClick={closeModal}>Close</button></div>
         </Modal>
     </div>

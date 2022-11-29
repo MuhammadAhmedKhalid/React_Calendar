@@ -1,13 +1,16 @@
 import React, { useState } from 'react'
 import Modal from 'react-modal'
 import { format } from 'date-fns';
+import axios from 'axios'
 
 function AddEvent(props) {
-    const{openModal,setOpenModal, startDate, endDate, setStartDate, setEndDate}=props
+    const{openModal,setOpenModal, setRefresh
+      // startDateModal, endDateModal
+    }=props
 
     const change = () => {
         setOpenModal(false)
-        setAllDay(false)
+        setEvent({...event, allDay: false})
     }
 
     const customStyles = {
@@ -33,30 +36,20 @@ function AddEvent(props) {
       },
     };  
 
-    const[event, setEvent] = useState('')
-    const[startTime, setStartTime] = useState(format(new Date(), 'kk:mm:ss'))
-    const[endTime, setEndTime] = useState(format(new Date(), 'kk:mm:ss'))
-    const[allDay, setAllDay] = useState(false)
-    
+    const[event, setEvent] = useState({
+      title: '',
+      startDate: format(new Date(), 'yyyy-MM-dd'),
+      endDate: format(new Date(), 'yyyy-MM-dd'),
+      startTime: format(new Date(), 'hh:mm:ss'),
+      endTime: format(new Date(), 'hh:mm:ss'),
+      allDay: false,
+    })
+
     const saveEvent = (e) => {
       e.preventDefault();
       setOpenModal(false)
-
-      console.log('Event Added!')
-      console.log('Event:',event)
-      switch(allDay){
-        case true:
-          console.log('Date:',startDate)
-          break
-        case false:
-          console.log('Start time:',startTime)
-          console.log('Start date:',startDate)
-          console.log('End time:',endTime)
-          console.log('End date:',endDate)
-          break
-        default:
-          break
-      }
+      axios.post(`http://localhost:8080/addEvent`, event)
+      setRefresh(true)
     }
   return (
     <div>
@@ -65,26 +58,43 @@ function AddEvent(props) {
         isOpen={openModal}
         onRequestClose={()=>
           {setOpenModal(false) 
-            setAllDay(false)}
+            setEvent({...event, allDay: false})
+          }
         }>
           <h2>Add Event</h2>
           <form onSubmit={saveEvent}>
             <label>Event: </label>
-            <input type='text' value={event} onChange={e => setEvent(e.target.value)} placeholder='Enter Event...'/>
+            <input type='text' 
+                    value={event.title} 
+                    onChange={e => setEvent({...event,title: e.target.value})} 
+                    placeholder='Enter Event...'/>
             <div></div>
             <label>Start Date: </label>
-            <input type="date" value={format(new Date(startDate), 'yyyy-MM-dd')} onChange={e => setStartDate(e.target.value)}/>
+            <input type="date" 
+                    value={event.startDate} 
+                    onChange={e => setEvent({...event, startDate: e.target.value})}/>
             <div></div>
             <label>End Date: </label>
-            <input type="date" disabled={allDay} id="eDate" value={format(new Date(endDate), 'yyyy-MM-dd')} onChange={e => setEndDate(e.target.value)}/>
+            <input type="date" 
+                    disabled={event.allDay} 
+                    value={event.endDate} 
+                    onChange={e => setEvent({...event, endDate: e.target.value})}/>
             <div></div>
             <label>Start Time: </label>
-            <input type="time" disabled={allDay} value={startTime} onChange={e => setStartTime(e.target.value)}/>
+            <input type="time" 
+                    disabled={event.allDay} 
+                    value={event.startTime} 
+                    onChange={e => setEvent({...event,startTime: e.target.value})}/>
             <div></div>
             <label>End Time: </label>
-            <input type="time" disabled={allDay} value={endTime} onChange={e => setEndTime(e.target.value)}/>
+            <input type="time" 
+                    disabled={event.allDay} 
+                    value={event.endTime} 
+                    onChange={e => setEvent({...event,endTime: e.target.value})}/>
             <div></div>
-            <input type="checkbox" id="cBox" value={allDay} onChange={e => setAllDay(e.target.checked)}/>
+            <input type="checkbox" 
+                    value={event.allDay} 
+                    onChange={e => setEvent({...event, allDay: e.target.checked})}/>
             <label>All Day</label>
             <div></div>
             <button type='submit'>ADD</button>

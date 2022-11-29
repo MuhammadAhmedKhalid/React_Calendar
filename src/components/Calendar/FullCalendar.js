@@ -1,35 +1,49 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar, momentLocalizer  } from 'react-big-calendar' 
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import events from './events'
 import AddEvent from '../../form/AddEvent';
 import { format } from 'date-fns';
 import ShowEvent from '../../form/ShowEvent';
+import axios from 'axios';
 
 const localizer = momentLocalizer(moment)
 
 function FullCalendar() {
+
+  const[events, setEvents] = useState()
+  const[refresh, setRefresh] = useState(false)
+
+  useEffect(() => {
+    axios.get('http://localhost:8080/getEvents')
+    .then(response => {setEvents(response.data)})
+    .catch(error => {console.log(error)})
+  },[refresh])
+
   const[openModal, setOpenModal] = useState(false)
   const[detailModal, setDetailModal] = useState(false)
 
   const[eventTitle, setEventTitle] = useState('')
-  const[eventStartDateTime, setEventStartDateTime] = useState(new Date())
-  const[eventEndDateTime, setEventEndDateTime] = useState(new Date())
+  const[startDate, setStartDate] = useState()
+  const[endDate, setEndDate] = useState()
+  const[startTime, setStartTime] = useState()
+  const[endTime, setEndTime] = useState()
   
-  const[startDate, setStartDate] = useState(format(new Date(), 'MMMM dd, yyyy'))
-  const[endDate, setEndDate] = useState(format(new Date(), 'MMMM dd, yyyy'))
+  const[startDateModal, setStartDateModal] = useState(format(new Date(), 'MMMM dd, yyyy'))
+  const[endDateModal, setEndDateModal] = useState(format(new Date(), 'MMMM dd, yyyy'))
 
   const change = (slotInfo) => {
-      setStartDate(slotInfo.start.toDateString())
-      setEndDate(slotInfo.start.toDateString())
+      setStartDateModal(slotInfo.start.toDateString())
+      setEndDateModal(slotInfo.start.toDateString())
       setOpenModal(true)
     }
 
   const showDetails =(event) => {
     setEventTitle(event.title)
-    setEventStartDateTime(event.startDate)
-    setEventEndDateTime(event.endDate)
+    setStartDate(event.startDate)
+    setEndDate(event.endDate)
+    setStartTime(event.startTime)
+    setEndTime(event.endTime)
     setDetailModal(true)
   } 
   
@@ -39,6 +53,7 @@ function FullCalendar() {
         style={{ height: 800, margin: "50px" }}
         localizer={localizer}
         events={events}
+        views={['month']}
         startAccessor="startDate"
         endAccessor="endDate"
         selectable
@@ -50,13 +65,12 @@ function FullCalendar() {
         } 
       />
       <div>
-          <AddEvent setOpenModal={setOpenModal} openModal={openModal} 
-                    startDate={startDate} endDate={endDate}
-                    setStartDate={setStartDate} setEndDate={setEndDate} />
+          <AddEvent setRefresh={setRefresh} setOpenModal={setOpenModal} openModal={openModal} 
+                    startDateModal={startDateModal} endDateModal={endDateModal} />
       </div>
       <div>
-        <ShowEvent setDetailModal={setDetailModal} detailModal={detailModal} 
-                   eventTitle={eventTitle} eventStartDateTime={eventStartDateTime} eventEndDateTime={eventEndDateTime}/>
+        <ShowEvent setDetailModal={setDetailModal} detailModal={detailModal} eventTitle={eventTitle} 
+                  startDate={startDate} endDate={endDate} startTime={startTime} endTime={endTime} />
       </div>
       </div>
   );
