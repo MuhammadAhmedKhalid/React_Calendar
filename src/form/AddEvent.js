@@ -1,13 +1,18 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Modal from 'react-modal'
 import { format } from 'date-fns';
 import axios from 'axios'
 
 function AddEvent(props) {
-    const{openModal,setOpenModal, setRefresh
-      // startDateModal, endDateModal
-    }=props
+    const{openModal,setOpenModal, setRefresh, startDateModal, endDateModal}=props
 
+    useEffect(()=> {
+      setRefresh(false)
+      let sDate =format(new Date(startDateModal), 'yyyy-MM-dd')
+      let eDate =format(new Date(startDateModal), 'yyyy-MM-dd')
+      setEvent({...event, startDate: sDate, endDate: eDate})
+    },[startDateModal, endDateModal])
+    
     const change = () => {
         setOpenModal(false)
         setEvent({...event, allDay: false})
@@ -44,11 +49,30 @@ function AddEvent(props) {
       endTime: format(new Date(), 'hh:mm:ss'),
       allDay: false,
     })
+    
+    const eventAllDay = {
+      title: event.title,
+      startDate: event.startDate,
+      endDate: event.startDate,
+      allDay: event.allDay
+    }
 
     const saveEvent = (e) => {
       e.preventDefault();
       setOpenModal(false)
-      axios.post(`http://localhost:8080/addEvent`, event)
+      setEvent({...event, allDay: false, title: ' '})
+
+      switch(event.allDay){
+        case true:
+          axios.post(`http://localhost:8080/addEvent`, eventAllDay)
+          break
+        case false:
+          axios.post(`http://localhost:8080/addEvent`, event)
+          break 
+        default:
+          break
+      }
+      
       setRefresh(true)
     }
   return (

@@ -51,6 +51,7 @@ function FullCalendar() {
     <div>
       <Calendar
         style={{ height: 800, margin: "50px" }}
+        messages={{today: 'Current'}}
         localizer={localizer}
         events={events}
         views={['month']}
