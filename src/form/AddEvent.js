@@ -7,6 +7,7 @@ function AddEvent(props) {
 
     const change = () => {
         setOpenModal(false)
+        setAllDay(false)
     }
 
     const customStyles = {
@@ -39,29 +40,33 @@ function AddEvent(props) {
     
     const saveEvent = (e) => {
       e.preventDefault();
+      setOpenModal(false)
+
       console.log('Event Added!')
       console.log('Event:',event)
-      console.log('Start time:',startTime)
-      console.log('Start date:',startDate)
-      console.log('End time:',endTime)
-      console.log('End date:',endDate)
-      console.log('All day:',allDay)
-      
-      const checkbox = document.getElementById('myCheckbox')
-      checkbox.addEventListener('change', (event) => {
-        if (event.currentTarget.checked) {
-          setAllDay(true)
-        } else {
-          setAllDay(false)
-        }
-      })
+      switch(allDay){
+        case true:
+          console.log('Date:',startDate)
+          break
+        case false:
+          console.log('Start time:',startTime)
+          console.log('Start date:',startDate)
+          console.log('End time:',endTime)
+          console.log('End date:',endDate)
+          break
+        default:
+          break
+      }
     }
   return (
     <div>
         <Modal
         style={customStyles}
         isOpen={openModal}
-        onRequestClose={()=>setOpenModal(false)}>
+        onRequestClose={()=>
+          {setOpenModal(false) 
+            setAllDay(false)}
+        }>
           <h2>Add Event</h2>
           <form onSubmit={saveEvent}>
             <label>Event: </label>
@@ -71,20 +76,20 @@ function AddEvent(props) {
             <input type="date" value={format(new Date(startDate), 'yyyy-MM-dd')} onChange={e => setStartDate(e.target.value)}/>
             <div></div>
             <label>End Date: </label>
-            <input type="date" value={format(new Date(endDate), 'yyyy-MM-dd')} onChange={e => setEndDate(e.target.value)}/>
+            <input type="date" disabled={allDay} id="eDate" value={format(new Date(endDate), 'yyyy-MM-dd')} onChange={e => setEndDate(e.target.value)}/>
             <div></div>
             <label>Start Time: </label>
-            <input type="time" value={startTime} onChange={e => setStartTime(e.target.value)}/>
+            <input type="time" disabled={allDay} value={startTime} onChange={e => setStartTime(e.target.value)}/>
             <div></div>
             <label>End Time: </label>
-            <input type="time" value={endTime} onChange={e => setEndTime(e.target.value)}/>
+            <input type="time" disabled={allDay} value={endTime} onChange={e => setEndTime(e.target.value)}/>
             <div></div>
-            <input type="checkbox" id="myCheckbox"/>
+            <input type="checkbox" id="cBox" value={allDay} onChange={e => setAllDay(e.target.checked)}/>
             <label>All Day</label>
             <div></div>
             <button type='submit'>ADD</button>
             <div><br/></div>
-            <div><button onClick={change}>Close Modal</button></div>
+            <div><button onClick={change}>Close</button></div>
           </form>
         </Modal>
     </div>
