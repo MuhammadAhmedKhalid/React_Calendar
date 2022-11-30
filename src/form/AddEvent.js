@@ -15,7 +15,7 @@ function AddEvent(props) {
     
     const change = () => {
         setOpenModal(false)
-        setEvent({...event, allDay: false})
+        setEvent({...event, allDay: false, weekly: false})
     }
 
     const customStyles = {
@@ -48,30 +48,56 @@ function AddEvent(props) {
       startTime: format(new Date(), 'hh:mm:ss'),
       endTime: format(new Date(), 'hh:mm:ss'),
       allDay: false,
+      weekly: false,
+      weekday: 'monday'
     })
     
     const eventAllDay = {
       title: event.title,
       startDate: event.startDate,
-      endDate: event.startDate,
-      allDay: event.allDay
+      endDate: event.startDate
     }
 
+    const normalEvent = {
+      title: event.title,
+      startDate: event.startDate,
+      endDate: event.endDate,
+      startTime: event.startTime,
+      endTime: event.endTime
+    }
+
+    const weeklyEvent = {
+      title: event.title,
+      startDate: event.startDate,
+      endDate: event.endDate,
+      startTime: event.startTime,
+      endTime: event.endTime,
+      weekday: event.weekday
+    }
+    
     const saveEvent = (e) => {
       e.preventDefault();
       setOpenModal(false)
-      setEvent({...event, allDay: false, title: ' '})
+      setEvent({...event, allDay: false, title: ' ', weekly: false})
 
-      switch(event.allDay){
-        case true:
-          axios.post(`http://localhost:8080/addEvent`, eventAllDay)
-          break
-        case false:
-          axios.post(`http://localhost:8080/addEvent`, event)
-          break 
-        default:
-          break
+      if(event.weekly === true){
+        axios.post(`http://localhost:8080/addEventWeekly`, weeklyEvent)
+      } else if (event.allDay === true){
+        axios.post(`http://localhost:8080/addEvent`, eventAllDay)
+      } else{
+        axios.post(`http://localhost:8080/addEvent`, normalEvent)
       }
+
+      // switch(event.allDay){
+      //   case true:
+      //     axios.post(`http://localhost:8080/addEvent`, eventAllDay)
+      //     break
+      //   case false:
+      //     axios.post(`http://localhost:8080/addEvent`, normalEvent)
+      //     break 
+      //   default:
+      //     break
+      // }
       
       setRefresh(true)
     }
@@ -82,7 +108,7 @@ function AddEvent(props) {
         isOpen={openModal}
         onRequestClose={()=>
           {setOpenModal(false) 
-            setEvent({...event, allDay: false})
+            setEvent({...event, allDay: false, weekly: false})
           }
         }>
           <h2>Add Event</h2>
@@ -117,10 +143,27 @@ function AddEvent(props) {
                     onChange={e => setEvent({...event,endTime: e.target.value})}/>
             <div></div>
             <input type="checkbox" 
+                    disabled={event.weekly}
                     value={event.allDay} 
                     onChange={e => setEvent({...event, allDay: e.target.checked})}/>
             <label>All Day</label>
             <div></div>
+            <input type="checkbox" 
+                    value={event.weekly} 
+                    onChange={e => setEvent({...event, weekly: e.target.checked})}/>
+            <label>Weekly</label>
+            <div/>
+            <label>Weekday: </label>
+            <select disabled={!event.weekly} value={event.weekday} onChange={(e)=>setEvent({...event, weekday: e.target.value})}>
+              <option value={"monday"}>Monday</option>
+              <option value={"tuesday"}>Tuesday</option>
+              <option value={"wednesday"}>Wednesday</option>
+              <option value={"thursday"}>Thursday</option>
+              <option value={"friday"}>Friday</option>
+              <option value={"saturday"}>Saturday</option>
+              <option value={"sunday"}>Sunday</option>
+            </select>
+            <div/>
             <button type='submit'>ADD</button>
             <div><br/></div>
             <div><button onClick={change}>Close</button></div>
