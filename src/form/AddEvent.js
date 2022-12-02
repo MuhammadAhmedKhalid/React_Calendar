@@ -7,15 +7,18 @@ function AddEvent(props) {
     const{openModal,setOpenModal, setRefresh, startDateModal, endDateModal}=props
 
     useEffect(()=> {
-      setRefresh(false)
       let sDate =format(new Date(startDateModal), 'yyyy-MM-dd')
       let eDate =format(new Date(startDateModal), 'yyyy-MM-dd')
       setEvent({...event, startDate: sDate, endDate: eDate})
     },[startDateModal, endDateModal])
+
+    useEffect(()=>{
+      setRefresh(false)
+    })
     
     const change = () => {
         setOpenModal(false)
-        setEvent({...event, allDay: false, weekly: false})
+        setEvent({...event, allDay: false, weekly: false, everyday: false})
     }
 
     const customStyles = {
@@ -47,16 +50,19 @@ function AddEvent(props) {
       endDate: format(new Date(), 'yyyy-MM-dd'),
       startTime: format(new Date(), 'hh:mm:ss'),
       endTime: format(new Date(), 'hh:mm:ss'),
+      weekday: 'Monday',
       allDay: false,
       weekly: false,
-      weekday: 'Monday'
+      everyday: false
     })
     
     const eventAllDay = {
       title: event.title,
       startDate: event.startDate,
       endDate: event.startDate,
-      allDay: event.allDay
+      allDay: event.allDay,
+      weekly: false,
+      everyday: false
     }
 
     const normalEvent = {
@@ -64,7 +70,10 @@ function AddEvent(props) {
       startDate: event.startDate,
       endDate: event.endDate,
       startTime: event.startTime,
-      endTime: event.endTime
+      endTime: event.endTime,
+      allDay: false,
+      weekly: false,
+      everyday: false
     }
 
     const weeklyEvent = {
@@ -74,33 +83,36 @@ function AddEvent(props) {
       startTime: event.startTime,
       endTime: event.endTime,
       weekday: event.weekday,
-      weekly: event.weekly
+      allDay: false,
+      weekly: event.weekly,
+      everyday: false
     }
     
+    const everydayEvent = {
+      title: event.title,
+      startDate: event.startDate,
+      endDate: event.endDate,
+      startTime: event.startTime,
+      endTime: event.endTime,
+      allDay: false,
+      weekly: false,
+      everyday: event.everyday
+    }
+
     const saveEvent = (e) => {
       e.preventDefault();
       setOpenModal(false)
-      setEvent({...event, allDay: false, title: ' ', weekly: false})
+      setEvent({...event, allDay: false, title: ' ', weekly: false, everyday: false})
 
       if(event.weekly === true){
         axios.post(`http://localhost:8080/addEventWeekly`, weeklyEvent)
+      } else if (event.everyday === true){
+        axios.post(`http://localhost:8080/addEventEveryday`, everydayEvent)
       } else if (event.allDay === true){
         axios.post(`http://localhost:8080/addEvent`, eventAllDay)
       } else{
         axios.post(`http://localhost:8080/addEvent`, normalEvent)
       }
-
-      // switch(event.allDay){
-      //   case true:
-      //     axios.post(`http://localhost:8080/addEvent`, eventAllDay)
-      //     break
-      //   case false:
-      //     axios.post(`http://localhost:8080/addEvent`, normalEvent)
-      //     break 
-      //   default:
-      //     break
-      // }
-      
       setRefresh(true)
     }
   return (
@@ -110,7 +122,7 @@ function AddEvent(props) {
         isOpen={openModal}
         onRequestClose={()=>
           {setOpenModal(false) 
-            setEvent({...event, allDay: false, weekly: false})
+            setEvent({...event, allDay: false, weekly: false, everyday: false})
           }
         }>
           <h2>Add Event</h2>
@@ -145,12 +157,13 @@ function AddEvent(props) {
                     onChange={e => setEvent({...event,endTime: e.target.value})}/>
             <div></div>
             <input type="checkbox" 
-                    disabled={event.weekly}
+                    disabled={event.weekly || event.everyday}
                     value={event.allDay} 
                     onChange={e => setEvent({...event, allDay: e.target.checked})}/>
             <label>All Day</label>
             <div></div>
             <input type="checkbox" 
+                    disabled={event.everyday || event.allDay}
                     value={event.weekly} 
                     onChange={e => setEvent({...event, weekly: e.target.checked})}/>
             <label>Weekly</label>
@@ -166,9 +179,16 @@ function AddEvent(props) {
               <option value={"Sunday"}>Sunday</option>
             </select>
             <div/>
+            <input type="checkbox" 
+                    value={event.everyday} 
+                    disabled={event.weekly || event.allDay}
+                    onChange={e => setEvent({...event, everyday: e.target.checked})}/>
+            <label>Everyday</label>
+            <div></div>
             <button type='submit'>ADD</button>
             <div><br/></div>
             <div><button onClick={change}>Close</button></div>
+            <script src='script.js'/>
           </form>
         </Modal>
     </div>

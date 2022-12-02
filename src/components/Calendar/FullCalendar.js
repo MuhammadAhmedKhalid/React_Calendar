@@ -23,11 +23,13 @@ function FullCalendar() {
   const[openModal, setOpenModal] = useState(false)
   const[detailModal, setDetailModal] = useState(false)
 
+  const[id, setId] = useState()
   const[eventTitle, setEventTitle] = useState('')
   const[startDate, setStartDate] = useState()
   const[endDate, setEndDate] = useState()
   const[startTime, setStartTime] = useState()
   const[endTime, setEndTime] = useState()
+  const[allDay, setAllDay] = useState()
   
   const[startDateModal, setStartDateModal] = useState(format(new Date(), 'MMMM dd, yyyy'))
   const[endDateModal, setEndDateModal] = useState(format(new Date(), 'MMMM dd, yyyy'))
@@ -39,22 +41,24 @@ function FullCalendar() {
     }
 
   const showDetails =(event) => {
+    setId(event.id)
     setEventTitle(event.title)
     setStartDate(event.startDate)
     setEndDate(event.endDate)
     setStartTime(event.startTime)
     setEndTime(event.endTime)
+    setAllDay(event.allDay)
     setDetailModal(true)
   } 
   
   return (
     <div>
       <Calendar
-        style={{ height: 800, margin: "50px" }}
+        style={{ height: 840, margin: "50px"}}
         messages={{today: 'Current'}}
         localizer={localizer}
         events={events}
-        views={['month']}
+        views={['month', 'day']}
         startAccessor="startDate"
         endAccessor="endDate"
         selectable
@@ -70,8 +74,8 @@ function FullCalendar() {
                     startDateModal={startDateModal} endDateModal={endDateModal} />
       </div>
       <div>
-        <ShowEvent setDetailModal={setDetailModal} detailModal={detailModal} eventTitle={eventTitle} 
-                  startDate={startDate} endDate={endDate} startTime={startTime} endTime={endTime} />
+        <ShowEvent setDetailModal={setDetailModal} detailModal={detailModal} eventTitle={eventTitle} setRefresh={setRefresh} id={id}
+                  startDate={startDate} endDate={endDate} startTime={startTime} endTime={endTime} allDay={allDay}/>
       </div>
       </div>
   );

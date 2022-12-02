@@ -1,8 +1,19 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Modal from 'react-modal'
+import axios from 'axios'
 
 function ShowEvent(props) {
-    const {setDetailModal, detailModal, eventTitle, startDate, endDate, startTime, endTime} = props
+    const {setDetailModal, detailModal, eventTitle, startDate, endDate, startTime, endTime, allDay, setRefresh, id} = props
+
+    useEffect(()=>{
+      setRefresh(false)
+    })
+
+    const deleteEvent = () => {
+      axios.delete(`http://localhost:8080/deleteEvent/${id}`)
+      setRefresh(true)
+      setDetailModal(false)
+    }
 
     const closeModal = () => {
         setDetailModal(false)
@@ -39,10 +50,21 @@ function ShowEvent(props) {
         onRequestClose={()=>setDetailModal(false)}>
              <h2>Event Details</h2>
              <p><b>Event:</b> {eventTitle}</p>
-             <p><b>Start Date:</b> {startDate}</p>
-             <p><b>End Date:</b> {endDate}</p>
-             <p><b>Start Time:</b> {startTime}</p>
-             <p><b>End Time:</b> {endTime}</p>
+             {
+               allDay ? 
+                <div>
+                  <p><b>Date:</b> {startDate}</p>
+                  <p>All Day</p>
+                </div> : 
+                <div>
+                  <p><b>Start Date:</b> {startDate}</p>
+                  <p><b>End Date:</b> {endDate}</p>
+                  <p><b>Start Time:</b> {startTime}</p>
+                  <p><b>End Time:</b> {endTime}</p>
+                </div>
+             }
+             <div><button onClick={deleteEvent}>Delete Event</button></div>
+             <div><p></p></div>
              <div><button onClick={closeModal}>Close</button></div>
         </Modal>
     </div>
