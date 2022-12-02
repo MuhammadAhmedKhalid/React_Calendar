@@ -49,13 +49,14 @@ function AddEvent(props) {
       endTime: format(new Date(), 'hh:mm:ss'),
       allDay: false,
       weekly: false,
-      weekday: 'monday'
+      weekday: 'Monday'
     })
     
     const eventAllDay = {
       title: event.title,
       startDate: event.startDate,
-      endDate: event.startDate
+      endDate: event.startDate,
+      allDay: event.allDay
     }
 
     const normalEvent = {
@@ -72,7 +73,8 @@ function AddEvent(props) {
       endDate: event.endDate,
       startTime: event.startTime,
       endTime: event.endTime,
-      weekday: event.weekday
+      weekday: event.weekday,
+      weekly: event.weekly
     }
     
     const saveEvent = (e) => {
@@ -155,13 +157,13 @@ function AddEvent(props) {
             <div/>
             <label>Weekday: </label>
             <select disabled={!event.weekly} value={event.weekday} onChange={(e)=>setEvent({...event, weekday: e.target.value})}>
-              <option value={"monday"}>Monday</option>
-              <option value={"tuesday"}>Tuesday</option>
-              <option value={"wednesday"}>Wednesday</option>
-              <option value={"thursday"}>Thursday</option>
-              <option value={"friday"}>Friday</option>
-              <option value={"saturday"}>Saturday</option>
-              <option value={"sunday"}>Sunday</option>
+              <option value={"Monday"}>Monday</option>
+              <option value={"Tuesday"}>Tuesday</option>
+              <option value={"Wednesday"}>Wednesday</option>
+              <option value={"Thursday"}>Thursday</option>
+              <option value={"Friday"}>Friday</option>
+              <option value={"Saturday"}>Saturday</option>
+              <option value={"Sunday"}>Sunday</option>
             </select>
             <div/>
             <button type='submit'>ADD</button>
