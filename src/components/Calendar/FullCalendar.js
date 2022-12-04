@@ -5,7 +5,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import AddEvent from '../../form/AddEvent';
 import { format } from 'date-fns';
 import ShowEvent from '../../form/ShowEvent';
-import axios from 'axios';
+import {useSelector} from 'react-redux'
 
 const localizer = momentLocalizer(moment)
 
@@ -14,12 +14,12 @@ function FullCalendar() {
   const[events, setEvents] = useState()
   const[refresh, setRefresh] = useState(false)
 
-  useEffect(() => {
-    axios.get('http://localhost:8080/getEvents')
-    .then(response => {setEvents(response.data)})
-    .catch(error => {console.log(error)})
-  },[refresh])
+  const eventsList = useSelector(state => state.events.events)
 
+  useEffect(() => {
+    setEvents(eventsList)
+  },[refresh])
+  
   const[openModal, setOpenModal] = useState(false)
   const[detailModal, setDetailModal] = useState(false)
 
@@ -58,7 +58,7 @@ function FullCalendar() {
         messages={{today: 'Current'}}
         localizer={localizer}
         events={events}
-        views={['month', 'day']}
+        views={['month']}
         startAccessor="startDate"
         endAccessor="endDate"
         selectable

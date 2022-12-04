@@ -102,7 +102,7 @@ function AddEvent(props) {
     const saveEvent = (e) => {
       e.preventDefault();
       setOpenModal(false)
-      setEvent({...event, allDay: false, title: ' ', weekly: false, everyday: false})
+      setEvent({...event, allDay: false, title: '', weekly: false, everyday: false})
 
       if(event.weekly === true){
         axios.post(`http://localhost:8080/addEventWeekly`, weeklyEvent)
